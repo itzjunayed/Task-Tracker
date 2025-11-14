@@ -12,19 +12,18 @@ A task management application built with Next.js, React, Django Rest Framework a
 
 ## Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Architecture](#-project-architecture)
-- [Key Highlights](#-key-highlights)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [How It Works](#-how-it-works)
-- [API Documentation](#-api-documentation)
-- [Deployment](#-deployment)
-- [Screenshots](#-screenshots)
-- [What I Learned](#-what-i-learned)
-- [Future Enhancements](#-future-enhancements)
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Architecture](#project-architecture)
+- [Key Highlights](#key-highlights)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [How It Works](#how-it-works)
+- [API Documentation](#api-documentation)
+- [Deployment](#deployment)
+- [Screenshots](#screenshots)
+- [What I Learned](#what-i-learned)
 
 ---
 
@@ -469,7 +468,7 @@ docker-compose up --build
 
 ---
 
-## 💡 How It Works
+## How It Works
 
 ### Authentication Flow
 
