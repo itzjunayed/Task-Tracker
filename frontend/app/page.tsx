@@ -70,7 +70,7 @@ export default function Home() {
 
   if (!isAuthenticated) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-black via-black to-black">
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black">
         {/* 3D Background Scene */}
         <div className="absolute inset-0 z-0">
           <Scene3D />

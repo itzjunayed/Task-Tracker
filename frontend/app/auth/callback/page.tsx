@@ -35,13 +35,6 @@ function CallbackContent() {
                     <div className="absolute inset-0 border-4 border-white rounded-full border-t-transparent animate-spin"></div>
                 </div>
 
-                {/* Text */}
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold text-white mb-2">
-                        Completing Sign In
-                    </h2>
-                </div>
-
             </div>
         </div>
     );
@@ -56,7 +49,6 @@ export default function AuthCallback() {
                         <div className="absolute inset-0 border-4 border-blue-900 rounded-full"></div>
                         <div className="absolute inset-0 border-4 border-white rounded-full border-t-transparent animate-spin"></div>
                     </div>
-                    <div className="text-2xl font-bold text-white">Loading...</div>
                 </div>
             </div>
         }>

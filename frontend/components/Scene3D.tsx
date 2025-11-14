@@ -51,7 +51,9 @@ function Model({ url }: { url: string }) {
 
 export default function Scene3D() {
 
-    const modelUrl = "/silent_hill-library.glb";
+    useEffect(() => {
+        useGLTF.preload("/silent_hill-library.glb");
+    }, []);
 
 
     // ============================================
@@ -66,7 +68,7 @@ export default function Scene3D() {
             <directionalLight position={[-20, -20, -5]} intensity={1} />
             <pointLight position={[10, 10, 5]} intensity={1} />
 
-            <Model url={modelUrl} />
+            <Model url="/silent_hill-library.glb" />
 
         </Canvas>
     );
