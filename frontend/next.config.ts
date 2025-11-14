@@ -6,9 +6,25 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
 
-  // Cache GLB files for fast loading
+  // Ensure static files are properly handled
+  output: 'standalone',
+
+  // Configure headers for GLB files
   async headers() {
     return [
+      {
+        source: '/silent_hill-library.glb',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Content-Type',
+            value: 'model/gltf-binary',
+          },
+        ],
+      },
       {
         source: '/:path*.(glb|gltf)',
         headers: [
@@ -16,12 +32,16 @@ const nextConfig: NextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
+          {
+            key: 'Content-Type',
+            value: 'model/gltf-binary',
+          },
         ],
       },
     ];
   },
 
-  // Silence Turbopack warning (GLB files work fine as static assets)
+  // Suppress Turbopack warnings
   turbopack: {},
 };
 
