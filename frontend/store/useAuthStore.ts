@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = "http://localhost:8000";
 
 interface User {
     email: string;
@@ -71,9 +71,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
     handleGoogleCallback: async (code: string) => {
         try {
+            // Send both code AND redirect_uri
             const res = await axios.post(
                 `${API_BASE}/auth/google/`,
-                { code },
+                {
+                    code: code,
+                    redirect_uri: `${window.location.origin}/auth/callback`  // ADD THIS
+                },
                 { withCredentials: true }
             );
 

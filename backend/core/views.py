@@ -14,10 +14,17 @@ class GoogleLogin(APIView):
     
     def post(self, request):
         code = request.data.get('code')
+        redirect_uri = request.data.get('redirect_uri')  # Get from request
         
         if not code:
             return Response(
                 {'error': 'Code is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not redirect_uri:
+            return Response(
+                {'error': 'redirect_uri is required'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -27,7 +34,7 @@ class GoogleLogin(APIView):
             'code': code,
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['client_id'],
             'client_secret': settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['secret'],
-            'redirect_uri': request.data.get('redirect_uri', 'http://localhost:3000/auth/callback'),
+            'redirect_uri': redirect_uri,  # Use the one from request
             'grant_type': 'authorization_code',
         }
         
@@ -35,8 +42,13 @@ class GoogleLogin(APIView):
             token_response = requests.post(token_url, data=token_data)
             token_response.raise_for_status()
         except requests.exceptions.RequestException as e:
+            # Get detailed error from Google
+            error_detail = token_response.json() if token_response else str(e)
             return Response(
-                {'error': 'Failed to exchange code', 'details': str(e)}, 
+                {
+                    'error': 'Failed to exchange code', 
+                    'details': error_detail
+                }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
