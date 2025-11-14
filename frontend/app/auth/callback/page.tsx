@@ -1,9 +1,10 @@
 "use client";
+import { Suspense } from "react";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 
-export default function AuthCallback() {
+function CallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { handleGoogleCallback } = useAuthStore();
@@ -29,5 +30,17 @@ export default function AuthCallback() {
         <div className="flex items-center justify-center min-h-screen">
             <div className="text-xl">Completing sign in...</div>
         </div>
+    );
+}
+
+export default function AuthCallback() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-xl">Loading...</div>
+            </div>
+        }>
+            <CallbackContent />
+        </Suspense>
     );
 }
