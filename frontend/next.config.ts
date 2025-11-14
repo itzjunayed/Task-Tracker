@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  // Silence Turbopack warning (GLB files work fine as static assets)
+  turbopack: {},
 };
 
 export default nextConfig;

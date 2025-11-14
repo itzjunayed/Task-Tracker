@@ -55,9 +55,6 @@ export default function Scene3D() {
         useGLTF.preload("/silent_hill-library.glb");
     }, []);
 
-
-    // ============================================
-
     return (
         <Canvas>
             <PerspectiveCamera makeDefault position={[0, 0, 1]} fov={100} />
@@ -68,8 +65,9 @@ export default function Scene3D() {
             <directionalLight position={[-20, -20, -5]} intensity={1} />
             <pointLight position={[10, 10, 5]} intensity={1} />
 
-            <Model url="/silent_hill-library.glb" />
-
+            <Suspense fallback={null}>
+                <Model url="/silent_hill-library.glb" />
+            </Suspense>
         </Canvas>
     );
 }
