@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Django
+*.log
+staticfiles/
+media/
+local_settings.py
+db.sqlite3
+*.sqlite3
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Migrations (optional — comment out if you want to keep them)
+# **/migrations/*
+# !**/migrations/__init__.py
+
+# Byte-compiled
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+
+# Coverage / Testing
+.coverage
+htmlcov/
+.cache/
+pytest_cache/
+
+# IDE files
+.vscode/
+.idea/
+
+# Docker
+*.pid
+*.seed
+docker-compose.override.yml
