@@ -1,13 +1,12 @@
 "use client";
 import { Suspense, useRef, useEffect } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { PerspectiveCamera, OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 function Model({ url }: { url: string }) {
     const meshRef = useRef<THREE.Group>(null);
-    const gltf = useLoader(GLTFLoader, url);
+    const gltf = useGLTF(url);
     const zoomProgress = useRef(0);
     const isZooming = useRef(true);
 
