@@ -2,13 +2,11 @@
 import { useEffect, useState } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useSearchParams } from "next/navigation";
 
 export default function Home() {
   const { tasks, fetchTasks, addTask, toggleTask, deleteTask } = useTaskStore();
   const { user, isAuthenticated, isLoading, checkAuth, logout } = useAuthStore();
   const [title, setTitle] = useState("");
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     checkAuth();
@@ -43,22 +41,24 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-xl font-semibold text-gray-700">Loading...</div>
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-        <div className="max-w-md w-full mx-auto p-8 rounded-2xl shadow-lg bg-white">
-          <h1 className="text-3xl font-bold mb-2 text-center">Task Tracker ✅</h1>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="max-w-md w-full mx-auto p-8 rounded-2xl shadow-2xl bg-white/80 backdrop-blur-sm">
+          <h1 className="text-4xl font-bold mb-2 text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Task Tracker ✅
+          </h1>
           <p className="text-gray-600 text-center mb-8">Sign in to manage your tasks</p>
 
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 rounded-lg px-6 py-3 hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 rounded-lg px-6 py-3 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24">
               <path
@@ -78,7 +78,7 @@ export default function Home() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            <span className="font-semibold">Sign in with Google</span>
+            <span className="font-semibold text-gray-700">Sign in with Google</span>
           </button>
         </div>
       </div>
@@ -86,55 +86,75 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 rounded-2xl shadow-md bg-white">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Task Tracker ✅</h1>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600">{user?.email}</span>
-          <button
-            onClick={handleLogout}
-            className="text-sm bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Logout
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Task Tracker ✅
+            </h1>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600 hidden sm:inline">{user?.email}</span>
+              <button
+                onClick={handleLogout}
+                className="text-sm bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-2 mb-6">
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+              placeholder="Add a new task..."
+              className="flex-1 border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            />
+            <button
+              onClick={handleAdd}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg font-semibold"
+            >
+              Add
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            {tasks.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg">No tasks yet. Add one above! 🎯</p>
+              </div>
+            ) : (
+              tasks.map((t) => (
+                <div
+                  key={t.id}
+                  className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-all duration-200 group"
+                >
+                  <span
+                    className={`cursor-pointer flex-1 ${t.completed
+                        ? "line-through text-gray-400"
+                        : "text-gray-700 hover:text-blue-600"
+                      } transition-colors duration-200`}
+                    onClick={() => toggleTask(t.id, t.completed)}
+                  >
+                    {t.completed && "✓ "}
+                    {t.title}
+                  </span>
+                  <button
+                    onClick={() => deleteTask(t.id)}
+                    className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-200 ml-4"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
-
-      <div className="flex mb-4">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
-          placeholder="Add task..."
-          className="flex-1 border rounded-l px-3 py-2 focus:outline-none"
-        />
-        <button
-          onClick={handleAdd}
-          className="bg-blue-600 text-white px-4 rounded-r hover:bg-blue-700"
-        >
-          Add
-        </button>
-      </div>
-
-      <ul>
-        {tasks.length === 0 ? (
-          <li className="text-center text-gray-400 py-8">No tasks yet. Add one above!</li>
-        ) : (
-          tasks.map((t) => (
-            <li key={t.id} className="flex justify-between items-center py-2 border-b">
-              <span
-                className={`cursor-pointer ${t.completed ? "line-through text-gray-400" : ""}`}
-                onClick={() => toggleTask(t.id, t.completed)}
-              >
-                {t.title}
-              </span>
-              <button onClick={() => deleteTask(t.id)} className="text-red-500 hover:text-red-700">
-                ✕
-              </button>
-            </li>
-          ))
-        )}
-      </ul>
     </div>
   );
 }
