@@ -10,13 +10,16 @@ import requests
 User = get_user_model()
 
 class GoogleLogin(APIView):
-    permission_classes = [AllowAny]  # ADD THIS LINE
+    permission_classes = [AllowAny]
     
     def post(self, request):
         code = request.data.get('code')
         
         if not code:
-            return Response({'error': 'Code is required'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'Code is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         # Exchange code for access token
         token_url = 'https://oauth2.googleapis.com/token'
@@ -24,32 +27,49 @@ class GoogleLogin(APIView):
             'code': code,
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['client_id'],
             'client_secret': settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['secret'],
-            'redirect_uri': 'http://localhost:3000/auth/callback',
+            'redirect_uri': request.data.get('redirect_uri', 'http://localhost:3000/auth/callback'),
             'grant_type': 'authorization_code',
         }
         
-        token_response = requests.post(token_url, data=token_data)
-        
-        if token_response.status_code != 200:
+        try:
+            token_response = requests.post(token_url, data=token_data)
+            token_response.raise_for_status()
+        except requests.exceptions.RequestException as e:
             return Response(
-                {'error': 'Failed to exchange code', 'details': token_response.json()}, 
+                {'error': 'Failed to exchange code', 'details': str(e)}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         access_token = token_response.json().get('access_token')
         
+        if not access_token:
+            return Response(
+                {'error': 'No access token received'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         # Get user info from Google
         user_info_url = 'https://www.googleapis.com/oauth2/v2/userinfo'
-        user_info_response = requests.get(
-            user_info_url,
-            headers={'Authorization': f'Bearer {access_token}'}
-        )
-        
-        if user_info_response.status_code != 200:
-            return Response({'error': 'Failed to get user info'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user_info_response = requests.get(
+                user_info_url,
+                headers={'Authorization': f'Bearer {access_token}'}
+            )
+            user_info_response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {'error': 'Failed to get user info', 'details': str(e)}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         user_info = user_info_response.json()
         email = user_info.get('email')
+        
+        if not email:
+            return Response(
+                {'error': 'Email not provided by Google'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         # Get or create user
         user, created = User.objects.get_or_create(
