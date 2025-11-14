@@ -187,7 +187,7 @@ export default function Home() {
         </div>
 
         {/* Input Field - Fixed with animated background */}
-        <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 mb-4 overflow-hidden">
+        <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 overflow-hidden flex flex-col min-h-0">
 
           <div className="relative z-10 flex flex-col sm:flex-row gap-2">
             <input
@@ -195,20 +195,17 @@ export default function Home() {
               onChange={(e) => setTitle(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
               placeholder="Add a new task..."
-              className="text-black flex-1 border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="text-white flex-1 border border-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200"
             />
             <button
               onClick={handleAdd}
-              className="bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-semibold whitespace-nowrap hover:cursor-pointer"
+              className="bg-blue-950 text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-blue-900 transition-all duration-200 shadow-md hover:shadow-lg font-semibold whitespace-nowrap hover:cursor-pointer"
             >
               Add Task
             </button>
           </div>
-        </div>
 
-        {/* Tasks List - Scrollable with max height */}
-        <div className="flex-1 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 overflow-hidden flex flex-col min-h-0">
-          <h2 className="text-base sm:text-lg font-semibold text-gray-700 mb-4">
+          <h2 className="text-base sm:text-lg font-semibold text-white mt-4 mb-4">
             Your Tasks ({tasks.length})
           </h2>
 
@@ -216,7 +213,7 @@ export default function Home() {
             {tasks.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 <p className="text-gray-400 text-base sm:text-lg text-center px-4">
-                  No tasks yet. Add one above! 🎯
+                  No tasks yet. Add one above!
                 </p>
               </div>
             ) : (
@@ -224,12 +221,12 @@ export default function Home() {
                 {tasks.map((t) => (
                   <div
                     key={t.id}
-                    className="flex justify-between items-center p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-all duration-200 group hover:shadow-md"
+                    className="flex justify-between items-center p-3 sm:p-4 rounded-lg transition-all duration-200 group hover:shadow-md  hover:cursor-pointer bg-white/5"
                   >
                     <span
                       className={`cursor-pointer flex-1 text-sm sm:text-base ${t.completed
                         ? "line-through text-gray-400"
-                        : "text-gray-700 hover:text-blue-600"
+                        : "text-white hover:text-cyan-700"
                         } transition-colors duration-200 break-words pr-2`}
                       onClick={() => toggleTask(t.id, t.completed)}
                     >
