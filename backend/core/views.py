@@ -6,25 +6,40 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 import requests
+import logging
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 class GoogleLogin(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
+        # DEBUG: Log what we receive
+        logger.info(f"Request data: {request.data}")
+        logger.info(f"Request body: {request.body}")
+        logger.info(f"Content-Type: {request.content_type}")
+        
         code = request.data.get('code')
-        redirect_uri = request.data.get('redirect_uri')  # Get from request
+        redirect_uri = request.data.get('redirect_uri')
+        
+        # DEBUG: Log parsed values
+        logger.info(f"Parsed code: {code}")
+        logger.info(f"Parsed redirect_uri: {redirect_uri}")
         
         if not code:
             return Response(
-                {'error': 'Code is required'}, 
+                {'error': 'Code is required', 'received_data': str(request.data)}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         if not redirect_uri:
             return Response(
-                {'error': 'redirect_uri is required'}, 
+                {
+                    'error': 'redirect_uri is required',
+                    'received_data': str(request.data),
+                    'content_type': request.content_type
+                }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -34,7 +49,7 @@ class GoogleLogin(APIView):
             'code': code,
             'client_id': settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['client_id'],
             'client_secret': settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['secret'],
-            'redirect_uri': redirect_uri,  # Use the one from request
+            'redirect_uri': redirect_uri,
             'grant_type': 'authorization_code',
         }
         
@@ -42,7 +57,6 @@ class GoogleLogin(APIView):
             token_response = requests.post(token_url, data=token_data)
             token_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            # Get detailed error from Google
             error_detail = token_response.json() if token_response else str(e)
             return Response(
                 {
