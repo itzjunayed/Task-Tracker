@@ -6,30 +6,19 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 import requests
-import logging
 
-logger = logging.getLogger(__name__)
 User = get_user_model()
 
 class GoogleLogin(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        # DEBUG: Log what we receive
-        logger.info(f"Request data: {request.data}")
-        logger.info(f"Request body: {request.body}")
-        logger.info(f"Content-Type: {request.content_type}")
-        
         code = request.data.get('code')
         redirect_uri = request.data.get('redirect_uri')
         
-        # DEBUG: Log parsed values
-        logger.info(f"Parsed code: {code}")
-        logger.info(f"Parsed redirect_uri: {redirect_uri}")
-        
         if not code:
             return Response(
-                {'error': 'Code is required', 'received_data': str(request.data)}, 
+                {'error': 'Code is required'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -37,8 +26,7 @@ class GoogleLogin(APIView):
             return Response(
                 {
                     'error': 'redirect_uri is required',
-                    'received_data': str(request.data),
-                    'content_type': request.content_type
+                    'hint': 'Make sure frontend sends redirect_uri in request body'
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -56,21 +44,22 @@ class GoogleLogin(APIView):
         try:
             token_response = requests.post(token_url, data=token_data)
             token_response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            error_detail = token_response.json() if token_response else str(e)
+        except requests.exceptions.RequestException:
+            error_detail = token_response.json() if token_response.content else 'Unknown error'
             return Response(
                 {
-                    'error': 'Failed to exchange code', 
+                    'error': 'Failed to exchange code with Google', 
                     'details': error_detail
                 }, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        access_token = token_response.json().get('access_token')
+        token_json = token_response.json()
+        access_token = token_json.get('access_token')
         
         if not access_token:
             return Response(
-                {'error': 'No access token received'}, 
+                {'error': 'No access token received from Google'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -82,9 +71,9 @@ class GoogleLogin(APIView):
                 headers={'Authorization': f'Bearer {access_token}'}
             )
             user_info_response.raise_for_status()
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             return Response(
-                {'error': 'Failed to get user info', 'details': str(e)}, 
+                {'error': 'Failed to get user info from Google'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
